@@ -1,0 +1,30 @@
+{
+  "name": "iron-scroll-helper-behavior",
+  "description": "This element offer several convenient helper functions for handling scroll in your app!",
+  "main": "iron-scroll-helper-behavior.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
+    "paper-tabs": "PolymerElements/paper-tabs#^1.6.2",
+    "iron-pages": "PolymerElements/iron-pages#^1.0.7",
+    "paper-input": "PolymerElements/paper-input#^1.1.14",
+    "paper-icon-button": "PolymerElements/paper-icon-button#^1.1.2",
+    "paper-toggle-button": "PolymerElements/paper-toggle-button#^1.1.2"
+  },
+  "homepage": "https://github.com/JessedeRuijter/iron-scroll-helper-behavior",
+  "_release": "f27a1c8dc5",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "f27a1c8dc59fc7e577cbfa910843b3267e9e8f48"
+  },
+  "_source": "git://github.com/JessedeRuijter/iron-scroll-helper-behavior.git",
+  "_target": "master",
+  "_originalSource": "JessedeRuijter/iron-scroll-helper-behavior",
+  "_direct": true
+}

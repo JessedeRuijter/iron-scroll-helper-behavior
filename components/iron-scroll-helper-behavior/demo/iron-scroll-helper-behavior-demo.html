@@ -1,0 +1,282 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+
+<link rel="import" href="../iron-scroll-helper-behavior.html">
+
+<dom-module id="iron-scroll-helper-behavior-demo">
+  <template>
+    <style include="iron-flex iron-flex-alignment iron-positioning">
+      paper-material.card{
+        display: block;
+        width: 250px;
+        height: 50px;
+        margin: 10px;
+        padding: 25px;
+      }
+      paper-material.toolbar{
+        display: block;
+        z-index: 3;
+        background-color: #009688;
+      }
+
+      paper-button{
+        color: white;
+      }
+
+      paper-input{
+        --paper-input-container-underline:{
+          background-color: #eee;
+        }
+        --paper-input-container-underline-focus:{
+          background-color: #ffff8d;
+        }
+        --paper-input-container-input:{
+          color: white;
+        }      
+      }
+
+      paper-icon-button{
+        color: white;
+      }
+
+      paper-tabs{
+        color: white;
+        background-color: #00796B;        
+      }
+
+      div.circle{
+        border-radius: 50%;
+        background-color: #009688;
+        width: 50px;
+        height: 50px;
+        margin: auto;
+      }
+      div.settings{
+        padding: 10px;
+      }
+      div.expand{
+        display: block;
+        overflow: hidden;
+        padding: 0px;
+        height: 0px;
+      }
+
+
+      #scroller{
+        position: relative;
+        height: 500px;
+        overflow-y: scroll;
+      }
+      #expander{
+        margin-left: 10px;
+      }
+
+      paper-toggle-button{
+        --paper-toggle-button-checked-button-color: var(--paper-grey-50);
+        --paper-toggle-button-checked-bar-color: black;
+      }
+
+      p{
+        color: white;
+        margin: 0px;
+      }
+      p.number{
+        margin: auto;
+        font-size: 16px;
+        font-weight: 500;
+      }
+    </style>
+    <div class="vertical layout">
+      <paper-material class="toolbar flex">
+        <paper-tabs selected="{{modus}}">
+          <paper-tab>Position</paper-tab>
+          <paper-tab>Percentage</paper-tab>
+          <paper-tab>Object</paper-tab>          
+        </paper-tabs>
+
+        <div class="expand">
+          <div style="margin: 20px;">
+            <div class="horizontal layout center">
+              <p style="margin: 0px 10px;">Skip</p>
+              <paper-toggle-button style="margin: 0px 0px 5px 12px;" checked id="animated"></paper-toggle-button>
+              <p style="margin: 0px 10px;">Animated</p>              
+            </div>
+
+            <div class="horizontal layout center">
+              <p style="margin: 0px 10px;">Linear</p>
+              <paper-toggle-button checked id="mode"></paper-toggle-button>
+              <p style="margin: 0px 10px;">Ease-in-out</p>              
+            </div>
+
+            <div class="horizontal layout center">
+              <p style="margin: 0px 10px;">Focus point:</p>
+              <paper-input id="focus" style="width: 60px;" type="number" value="20" no-label-float maxlength="2">
+                <p style="margin-left: 5px;" suffix>%</p>
+              </paper-input>
+            </div>
+
+            <div class="horizontal layout center">
+              <p style="margin: 0px 10px;">Duration:</p>
+              <paper-input id="duration" style="width: 90px;" type="number" value="2000" no-label-float maxlength="4">
+                <p style="margin-left: 5px;" suffix>ms</p>
+              </paper-input>
+            </div>
+          </div>
+        </div>
+
+        <paper-material class="horizontal layout center">
+          <paper-icon-button id="expander" icon="expand-more" on-tap="settingsToggle"></paper-icon-button>
+          <iron-pages class="flex" selected="{{modus}}">
+            <div class="horizontal layout center settings">
+              <p style="margin: 0px 10px;">Position:</p>
+              <paper-input on-change="modusChanged" id="position" style="width: 100px;" type="number" value="700" no-label-float maxlength="3">
+                <p style="margin-left: 5px;" suffix>pixels</p>
+              </paper-input>
+
+              <div class="flex"></div>
+              <paper-button on-tap="buttonHandler" raised>
+                SCROLL TO
+              </paper-button>
+            </div>
+
+            <div class="horizontal layout center settings">
+              <p style="margin: 0px 10px;">Percentage:</p>
+              <paper-input on-change="modusChanged" id="percentage" style="width: 80px;" type="number" value="80" no-label-float maxlength="2">
+                <p style="margin-left: 5px;" suffix>%</p>
+              </paper-input>
+              <div class="flex"></div>
+              <paper-button on-tap="buttonHandler" raised>
+                SCROLL TO
+              </paper-button>
+            </div>
+
+            <div class="horizontal layout center settings">
+              <p style="margin: 0px 10px;">Object:</p>
+              <paper-input on-change="modusChanged" id="object" style="width: 40px;" type="number" value="4" no-label-float maxlength="1"></paper-input>
+              <div class="flex"></div>
+              <paper-button on-tap="buttonHandlerObject" raised>
+                SCROLL TO
+              </paper-button>
+            </div>
+          </iron-pages>
+        </paper-material>
+      </paper-material>
+
+
+      <div id="scroller" class="vertical layout center">
+        <div>
+          <template is="dom-repeat" items="{{posts}}">
+            <div>
+              <paper-material class="scrollObject card horizontal layout center">
+                <div class="circle horizontal layout center">
+                  <p class="number">{{index}}</p>
+                </div>
+              </paper-material>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+  </template>
+  <script>
+    Polymer({
+
+      is: 'iron-scroll-helper-behavior-demo',
+
+      behaviors:[
+        IronScrollHelperBehavior
+      ],
+
+      properties: {
+      	posts: {
+          type: Array,
+          value: []
+        },
+        modus:{
+          type: Number,
+          value: 0,
+          observer: "modusChanged"
+        },
+        value:{
+          type: Number,
+          value: 700
+        },
+        settingsVisible:{
+          type: Boolean,
+          value: false
+        }
+      },
+      attached: function(){
+        this.set("posts", [0,1,2,3,4,5,6,7,8,9]);
+        this.element = this.$.scroller;
+      },
+      modusChanged: function(){
+        if (this.modus == 0){
+          this.value = this.$.position.value;
+        } else if (this.modus == 1){
+          this.value = this.$.percentage.value + "%";
+        } else{
+          this.value = this.$.object.value;
+        }
+      },
+
+      buttonHandler: function(){
+        this.setParameters();
+        this.scrollTo(this.$.scroller, this.value);
+      },
+      buttonHandlerObject: function(){
+        this.setParameters();
+        this.scrollToClassIndex(this.$.scroller, "scrollObject", this.value);
+      },
+      setParameters: function(){
+        this.scrollDuration = this.$.duration.value;
+        if (this.$.mode.checked)
+          this.scrollModus = "easeInOut";
+        else
+          this.scrollModus = "linear";
+        this.scrollFocus = this.$.focus.value;
+        this.scrollAnimated =  this.$.animated.checked;
+      },
+
+
+      settingsToggle: function(){
+        var expand = this.querySelector(".expand");
+        expand.style.WebkitTransition = "all 500ms";
+        expand.style.transition = "all 500ms";
+
+        this.$.scroller.style.WebkitTransition = "all 500ms";
+        this.$.scroller.style.transition = "all 500ms";
+
+        this.$.expander.style.WebkitTransition = "transform 500ms";
+        this.$.expander.style.transition = "transform 500ms";
+
+        if(!this.settingsVisible){
+          expand.style.height = "150px";
+          this.$.scroller.style.height = "350px";
+          this.settingsVisible = true;
+          this.$.expander.style.WebkitTransform = "rotate(-180deg)"; /* IE 9 */
+          this.$.expander.style.transform = "rotate(-180deg)";
+        }
+        else{
+          expand.style.height = "0px";
+          this.$.scroller.style.height = "500px";
+          this.settingsVisible = false;          
+          this.$.expander.style.WebkitTransform = "rotate(0deg)"; /* IE 9 */
+          this.$.expander.style.transform = "rotate(0deg)";
+        }
+ 
+      }
+    });
+  </script>
+</dom-module>
