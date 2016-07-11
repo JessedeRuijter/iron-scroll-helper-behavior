@@ -1,0 +1,143 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+
+<script>
+
+/**
+ * @demo demo/index.html
+ * @polymerBehavior IronScrollHelperBehavior
+ */
+
+IronScrollHelperBehaviorImpl = {
+
+  properties: {
+  	scrollModus: {
+  		type: String,
+  		value: "easeInOut"
+  	},
+  	scrollDuration:{
+  		type: Number,
+  		value: 2000
+  	},
+  	scrollFocus:{
+  		type: Number,
+  		value: 20
+  	},
+  	scrollAnimated:{
+  		type: Boolean,
+  		value: true
+  	}
+  },
+
+  scrollTo: function(element, to){
+    this.scrollToSettings(element, to, this.scrollAnimated, this.scrollDuration, this.scrollModus, this.scrollFocus);    
+  },
+  scrollToSettings: function(element, to, animated, duration, modus, focus){
+  	//Check type of the input "to" and parse.
+    if(to.endsWith("%"))
+    	to = (element.scrollHeight - element.clientHeight) * parseInt(to.replace("%", "")) / 100;
+    else if (!isNaN(parseInt(to))){
+    	to = Math.min(parseInt(to), element.scrollHeight - element.clientHeight);
+    }
+    else{
+    	var target = element.querySelector("#" + to);
+  		to = Math.min(target.offsetTop - focus * element.clientHeight / 100 + element.style.paddingTop + element.style.borderTopWidth, element.scrollHeight - element.clientHeight) ;
+    }
+
+    //Do an animated scroll or set to value.
+    if (animated)
+  		scrollElementTo(element, to, duration, modus);
+    else
+    	element.scrollTop = to;
+  },
+
+  scrollToClassIndex: function(element, scrollClass, index){
+  	this.scrollToClassIndexSettings(element, scrollClass, index, this.scrollAnimated, this.scrollDuration, this.scrollModus, this.scrollFocus);  
+  },
+  scrollToClassIndexSettings: function(element, scrollClass, index, animated, duration, modus, focus){
+  	var targets = element.querySelectorAll("." + scrollClass);
+  	var to = Math.min(targets[index].offsetTop - this.scrollFocus * element.clientHeight / 100 + element.style.paddingTop + element.style.borderTopWidth, element.scrollHeight - element.clientHeight);
+
+  	if (animated)
+  		scrollElementTo(element, to, duration, modus);
+    else
+    	element.scrollTop = to;
+  },
+
+  scrollToTop: function(element){
+  	this.scrollToTopSettings(element, this.scrollAnimated, this.scrollDuration, this.scrollModus);
+  },
+  scrollToTopSettings: function(element, animated, duration, modus){
+  	if (animated === undefined)
+        animated = this.scrollAnimated;
+
+  	if (animated)
+  		scrollElementTo(element, 0, duration, modus);
+    else
+    	element.scrollTop = 0;
+  },
+  scrollToBottom: function(element){
+  	this.scrollToBottomSettings(element, this.scrollAnimated, this.scrollDuration, this.scrollModus);
+  },
+  scrollToBottomSettings: function(element, animated, duration, modus){
+  	if (animated === undefined)
+        animated = this.scrollAnimated;
+
+    var to = element.scrollHeight - element.clientHeight;
+
+  	if (animated)
+  		scrollElementTo(element, to, duration, modus);
+    else
+    	element.scrollTop = to;
+  },
+
+  getOptionalParameters: function(){
+
+  }
+
+};
+
+function scrollElementTo(element, to, duration, modus) {
+  var start = element.scrollTop,
+      change = to - start,
+      currentTime = 0,
+      incrementTime = 20,
+      incrementPos = 0,
+      pos = start,
+      durationScaled = 0.3 * duration + 0.7 * Math.abs(change) / (element.scrollHeight - element.clientHeight) * duration;
+      
+  var animateScroll = function(){ 
+  	  if (change != 0){     
+	      currentTime += incrementTime;
+
+	      //Modus
+	      if(modus == "easeInOut")
+	      	pos = Math.easeInOutQuad(currentTime, start, change, durationScaled);
+	      else if(modus = "linear"){
+	      	incrementPos = change / (durationScaled / incrementTime);
+	      	pos += incrementPos;
+	      }
+
+	      //Do a step
+	      element.scrollTop = pos;
+	      if(currentTime < durationScaled) {
+	          setTimeout(animateScroll, incrementTime);
+	      }
+ 	  }	
+  };
+  animateScroll();
+};
+
+//Helper functions for eased animation
+Math.easeInOutQuad = function (t, b, c, d) {
+  t /= d/2;
+  if (t < 1) return c/2*t*t + b;
+  t--;
+  return -c/2 * (t*(t-2) - 1) + b;
+};
+
+/** @polymerBehavior */
+  IronScrollHelperBehavior = [
+    IronScrollHelperBehaviorImpl
+  ];
+
+</script>
