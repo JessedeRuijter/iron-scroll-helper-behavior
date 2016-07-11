@@ -1,15 +1,18 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
 
 <script>
+
 /**
- * Behavior that highlights stuff.
- *
- * @polymerBehavior
+ * @demo demo/index.html
+ * @polymerBehavior IronScrollHelperBehavior
  */
 
-IronScrollHelperBehavior = {
+IronScrollHelperBehaviorImpl = {
 
   properties: {
+    /**
+     * The scroll function can be linear or ease-in-out.
+     */
   	scrollModus: {
   		type: String,
   		value: "easeInOut"
@@ -134,4 +137,10 @@ Math.easeInOutQuad = function (t, b, c, d) {
   t--;
   return -c/2 * (t*(t-2) - 1) + b;
 };
+
+/** @polymerBehavior */
+  IronScrollHelperBehavior = [
+    IronScrollHelperBehaviorImpl
+  ];
+
 </script>
